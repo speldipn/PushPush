@@ -15,7 +15,7 @@ public class Player {
   }
 
   public void up() {
-      y -= 1;
+    y -= 1;
   }
 
   public void down() {

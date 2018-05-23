@@ -15,6 +15,7 @@ public class Stage extends View {
   Paint gridPaint = new Paint();
   Paint goalPaint = new Paint();
   Paint barrierPaint = new Paint();
+  Paint blockPaint = new Paint();
   Paint okPaint = new Paint();
   Paint tempPaint = null;
 
@@ -25,9 +26,13 @@ public class Stage extends View {
     gridPaint.setStyle(Paint.Style.STROKE); // 사각형의 스타일
     gridPaint.setStrokeWidth(1); // 선두께
     // goal
-    goalPaint.setColor(Color.MAGENTA);
+    goalPaint.setColor(Color.YELLOW);
     // ok
     okPaint.setColor(Color.BLUE);
+    // block
+    blockPaint.setColor(Color.GREEN);
+    // barrier
+    barrierPaint.setColor(Color.BLACK);
   }
 
   public void setConfig(int gridCount, float unit) {
@@ -52,6 +57,8 @@ public class Stage extends View {
         if (currentMap[i][j] == 0) {
           tempPaint = gridPaint;
         } else if (currentMap[i][j] == 1) {
+          tempPaint = blockPaint;
+        } else if (currentMap[i][j] == 2) {
           tempPaint = barrierPaint;
         } else if (currentMap[i][j] == 9) {
           tempPaint = goalPaint;
@@ -140,14 +147,15 @@ public class Stage extends View {
         next_y = my_x;
         if (checkPos(next_x, next_y)) {
           if (currentMap[next_x][next_y] == 1 || currentMap[next_x][next_y] == 5) {
-            if (checkPos(next_x - 1, next_y) && currentMap[next_x - 1][next_y] == 1) {
-              // 이중 장애물
+            if (checkPos(next_x - 1, next_y)
+            && (currentMap[next_x - 1][next_y] == 1 || currentMap[next_x -1][next_y] == 2)) {
+              // 블럭 이중 충돌
               ok = false;
             } else if (checkPos(next_x - 1, next_y) && currentMap[next_x - 1][next_y] == 9) {
               currentMap[next_x][next_y] = 0;
               currentMap[next_x - 1][next_y] = 5;
             } else {
-              // 장애물 이동
+              // 블럭 이동
               if (checkPos(next_x - 1, next_y)) {
                 if (currentMap[next_x - 1][next_y] == 0) {
                   if (currentMap[next_x][next_y] == 0 || currentMap[next_x][next_y] == 1) {
@@ -162,6 +170,9 @@ public class Stage extends View {
                 ok = false;
               }
             }
+          } else if (currentMap[next_x][next_y] == 2) {
+            // 앞에 장매물이 있으면
+            ok = false;
           }
         }
         break;
@@ -170,7 +181,8 @@ public class Stage extends View {
         next_y = my_x;
         if (checkPos(next_x, next_y)) {
           if (currentMap[next_x][next_y] == 1 || currentMap[next_x][next_y] == 5) {
-            if (checkPos(next_x + 1, next_y) && currentMap[next_x + 1][next_y] == 1) {
+            if (checkPos(next_x + 1, next_y)
+              && (currentMap[next_x + 1][next_y] == 1 || currentMap[next_x + 1][next_y] == 2)) {
               // 이중 장애물
               ok = false;
             } else if (checkPos(next_x + 1, next_y) && currentMap[next_x + 1][next_y] == 9) {
@@ -192,6 +204,8 @@ public class Stage extends View {
                 ok = false;
               }
             }
+          } else if (currentMap[next_x][next_y] == 2) {
+            ok = false;
           }
         }
         break;
@@ -200,7 +214,8 @@ public class Stage extends View {
         next_y = my_x - 1;
         if (checkPos(next_x, next_y)) {
           if (currentMap[next_x][next_y] == 1 || currentMap[next_x][next_y] == 5) {
-            if (checkPos(next_x, next_y - 1) && currentMap[next_x][next_y - 1] == 1) {
+            if (checkPos(next_x, next_y - 1)
+              && (currentMap[next_x][next_y - 1] == 1 || currentMap[next_x][next_y - 1] == 2)) {
               // 이중 장애물
               ok = false;
             } else if (checkPos(next_x, next_y - 1) && currentMap[next_x][next_y - 1] == 9) {
@@ -222,6 +237,8 @@ public class Stage extends View {
                 ok = false;
               }
             }
+          } else if (currentMap[next_x][next_y] == 2) {
+            ok = false;
           }
         }
         break;
@@ -230,7 +247,8 @@ public class Stage extends View {
         next_y = my_x + 1;
         if (checkPos(next_x, next_y)) {
           if (currentMap[next_x][next_y] == 1 || currentMap[next_x][next_y] == 5) {
-            if (checkPos(next_x, next_y + 1) && currentMap[next_x][next_y + 1] == 1) {
+            if (checkPos(next_x, next_y + 1)
+              && (currentMap[next_x][next_y + 1] == 1 || currentMap[next_x][next_y + 1] == 2)) {
               // 이중 장애물
               ok = false;
             } else if (checkPos(next_x, next_y + 1) && currentMap[next_x][next_y + 1] == 9) {
@@ -239,7 +257,7 @@ public class Stage extends View {
             } else {
               // 장애물 이동
               if (checkPos(next_x, next_y + 1)) {
-                if ( currentMap[next_x][next_y + 1] == 0) {
+                if (currentMap[next_x][next_y + 1] == 0) {
                   if (currentMap[next_x][next_y] == 0 || currentMap[next_x][next_y] == 1) {
                     currentMap[next_x][next_y] = 0;
                     currentMap[next_x][next_y + 1] = 1;
@@ -252,6 +270,8 @@ public class Stage extends View {
                 ok = false;
               }
             }
+          } else if (currentMap[next_x][next_y] == 2) {
+            ok = false;
           }
         }
         break;
