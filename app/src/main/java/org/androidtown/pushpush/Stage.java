@@ -5,7 +5,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.view.View;
-import android.widget.Toast;
 
 public class Stage extends View {
   int gridCount;
@@ -44,7 +43,6 @@ public class Stage extends View {
   }
 
   private void drawMap(Canvas canvas) {
-    boolean endOfGame = true;
     for (int i = 0; i < currentMap.length; ++i) {
       for (int j = 0; j < currentMap[0].length; ++j) {
         int top = (int) (i * unit);
@@ -59,9 +57,6 @@ public class Stage extends View {
           tempPaint = goalPaint;
         } else if (currentMap[i][j] == 5) {
           tempPaint = okPaint;
-        }
-        if(currentMap[i][j] == 9) {
-          endOfGame = false;
         }
         canvas.drawRect(left, top, right, bottom, tempPaint);
       }
@@ -133,7 +128,6 @@ public class Stage extends View {
     return false;
   }
 
-
   private boolean checkCollision(int direction) {
     boolean ok = true;
     int my_x = player.x;
@@ -145,7 +139,7 @@ public class Stage extends View {
         next_x = my_y - 1;
         next_y = my_x;
         if (checkPos(next_x, next_y)) {
-          if (currentMap[next_x][next_y] == 1) {
+          if (currentMap[next_x][next_y] == 1 || currentMap[next_x][next_y] == 5) {
             if (checkPos(next_x - 1, next_y) && currentMap[next_x - 1][next_y] == 1) {
               // 이중 장애물
               ok = false;
@@ -154,9 +148,16 @@ public class Stage extends View {
               currentMap[next_x - 1][next_y] = 5;
             } else {
               // 장애물 이동
-              if (checkPos(next_x - 1, next_y) && currentMap[next_x - 1][next_y] == 0) {
-                currentMap[next_x][next_y] = 0;
-                currentMap[next_x - 1][next_y] = 1;
+              if (checkPos(next_x - 1, next_y)) {
+                if (currentMap[next_x - 1][next_y] == 0) {
+                  if (currentMap[next_x][next_y] == 0 || currentMap[next_x][next_y] == 1) {
+                    currentMap[next_x][next_y] = 0;
+                    currentMap[next_x - 1][next_y] = 1;
+                  } else if (currentMap[next_x][next_y] == 5) {
+                    currentMap[next_x][next_y] = 9;
+                    currentMap[next_x - 1][next_y] = 1;
+                  }
+                }
               } else {
                 ok = false;
               }
@@ -168,7 +169,7 @@ public class Stage extends View {
         next_x = my_y + 1;
         next_y = my_x;
         if (checkPos(next_x, next_y)) {
-          if (currentMap[next_x][next_y] == 1) {
+          if (currentMap[next_x][next_y] == 1 || currentMap[next_x][next_y] == 5) {
             if (checkPos(next_x + 1, next_y) && currentMap[next_x + 1][next_y] == 1) {
               // 이중 장애물
               ok = false;
@@ -177,15 +178,20 @@ public class Stage extends View {
               currentMap[next_x + 1][next_y] = 5;
             } else {
               // 장애물 이동
-              if (checkPos(next_x + 1, next_y) && currentMap[next_x + 1][next_y] == 0) {
-                currentMap[next_x][next_y] = 0;
-                currentMap[next_x + 1][next_y] = 1;
+              if (checkPos(next_x + 1, next_y)) {
+                if (currentMap[next_x + 1][next_y] == 0) {
+                  if (currentMap[next_x][next_y] == 0 || currentMap[next_x][next_y] == 1) {
+                    currentMap[next_x][next_y] = 0;
+                    currentMap[next_x + 1][next_y] = 1;
+                  } else if (currentMap[next_x][next_y] == 5) {
+                    currentMap[next_x][next_y] = 9;
+                    currentMap[next_x + 1][next_y] = 1;
+                  }
+                }
               } else {
                 ok = false;
               }
             }
-          } else if (currentMap[next_x][next_y] == 5) {
-
           }
         }
         break;
@@ -193,7 +199,7 @@ public class Stage extends View {
         next_x = my_y;
         next_y = my_x - 1;
         if (checkPos(next_x, next_y)) {
-          if (currentMap[next_x][next_y] == 1) {
+          if (currentMap[next_x][next_y] == 1 || currentMap[next_x][next_y] == 5) {
             if (checkPos(next_x, next_y - 1) && currentMap[next_x][next_y - 1] == 1) {
               // 이중 장애물
               ok = false;
@@ -202,9 +208,16 @@ public class Stage extends View {
               currentMap[next_x][next_y - 1] = 5;
             } else {
               // 장애물 이동
-              if (checkPos(next_x, next_y - 1) && currentMap[next_x][next_y - 1] == 0) {
-                currentMap[next_x][next_y] = 0;
-                currentMap[next_x][next_y - 1] = 1;
+              if (checkPos(next_x, next_y - 1)) {
+                if (currentMap[next_x][next_y - 1] == 0) {
+                  if (currentMap[next_x][next_y] == 0 || currentMap[next_x][next_y] == 1) {
+                    currentMap[next_x][next_y] = 0;
+                    currentMap[next_x][next_y - 1] = 1;
+                  } else if (currentMap[next_x][next_y] == 5) {
+                    currentMap[next_x][next_y] = 9;
+                    currentMap[next_x][next_y - 1] = 1;
+                  }
+                }
               } else {
                 ok = false;
               }
@@ -216,7 +229,7 @@ public class Stage extends View {
         next_x = my_y;
         next_y = my_x + 1;
         if (checkPos(next_x, next_y)) {
-          if (currentMap[next_x][next_y] == 1) {
+          if (currentMap[next_x][next_y] == 1 || currentMap[next_x][next_y] == 5) {
             if (checkPos(next_x, next_y + 1) && currentMap[next_x][next_y + 1] == 1) {
               // 이중 장애물
               ok = false;
@@ -225,9 +238,16 @@ public class Stage extends View {
               currentMap[next_x][next_y + 1] = 5;
             } else {
               // 장애물 이동
-              if (checkPos(next_x, next_y + 1) && currentMap[next_x][next_y + 1] == 0) {
-                currentMap[next_x][next_y] = 0;
-                currentMap[next_x][next_y + 1] = 1;
+              if (checkPos(next_x, next_y + 1)) {
+                if ( currentMap[next_x][next_y + 1] == 0) {
+                  if (currentMap[next_x][next_y] == 0 || currentMap[next_x][next_y] == 1) {
+                    currentMap[next_x][next_y] = 0;
+                    currentMap[next_x][next_y + 1] = 1;
+                  } else if (currentMap[next_x][next_y] == 5) {
+                    currentMap[next_x][next_y] = 9;
+                    currentMap[next_x][next_y + 1] = 1;
+                  }
+                }
               } else {
                 ok = false;
               }
