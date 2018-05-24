@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.util.Log;
 import android.view.View;
 
 public class Stage extends View {
@@ -18,9 +19,11 @@ public class Stage extends View {
   Paint blockPaint = new Paint();
   Paint okPaint = new Paint();
   Paint tempPaint = null;
+  GameChecker gameChecker;
 
   public Stage(Context context) {
     super(context);
+    this.gameChecker = (MainActivity)context;
     // grid
     gridPaint.setColor(Color.GRAY); // 사각형의 색
     gridPaint.setStyle(Paint.Style.STROKE); // 사각형의 스타일
@@ -47,7 +50,12 @@ public class Stage extends View {
     drawPlayer(canvas);
   }
 
+  public interface GameChecker {
+    public void endOfGameCallback();
+  }
+
   private void drawMap(Canvas canvas) {
+    boolean exitFlag = true;
     for (int i = 0; i < currentMap.length; ++i) {
       for (int j = 0; j < currentMap[0].length; ++j) {
         int top = (int) (i * unit);
@@ -62,11 +70,16 @@ public class Stage extends View {
           tempPaint = barrierPaint;
         } else if (currentMap[i][j] == 9) {
           tempPaint = goalPaint;
+          exitFlag = false;
         } else if (currentMap[i][j] == 5) {
           tempPaint = okPaint;
         }
         canvas.drawRect(left, top, right, bottom, tempPaint);
+        // TODO: 골인 지점을 삼각형.
       }
+    }
+    if(exitFlag) {
+      gameChecker.endOfGameCallback();
     }
   }
 

@@ -25,7 +25,7 @@ public class MyButton extends AppCompatButton {
   }
 
   private void setTheme(AppCompatButton button) {
-    button.setBackgroundColor(Color.BLUE);
+    button.setBackgroundColor(Color.GRAY);
     button.setTextColor(Color.WHITE);
   }
 }

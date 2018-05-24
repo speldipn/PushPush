@@ -3,10 +3,12 @@ package org.androidtown.pushpush;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements Stage.GameChecker {
 
   private static int GRID_WIDTH = 0;
   private static int GRID_HEIGHT = 0;
@@ -69,5 +71,26 @@ public class MainActivity extends AppCompatActivity {
       case R.id.btnLeft: stage.move(stage.DIRECTION_LEFT); break;
       case R.id.btnRight: stage.move(stage.DIRECTION_RIGHT); break;
     }
+  }
+
+
+  @Override
+  public void endOfGameCallback() {
+    Toast toast = Toast.makeText(this, "성공 !! 게임을 종료합니다.", Toast.LENGTH_LONG);
+    toast.setGravity(Gravity.CENTER, 0, 0);
+    toast.show();
+
+    Thread exitThread = new Thread(){
+      @Override
+      public void run() {
+        try {
+          Thread.sleep(3000); // As I am using LENGTH_LONG in Toast
+          MainActivity.this.finish();
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+      }
+    };
+    exitThread.start();
   }
 }
