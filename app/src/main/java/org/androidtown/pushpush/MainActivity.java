@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements Stage.GameChecker
       @Override
       public void run() {
         try {
-          Thread.sleep(3000); // As I am using LENGTH_LONG in Toast
+          Thread.sleep(3000);
           MainActivity.this.finish();
         } catch (Exception e) {
           e.printStackTrace();
