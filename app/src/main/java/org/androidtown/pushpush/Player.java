@@ -14,6 +14,11 @@ public class Player {
     y = 0;
   }
 
+  public void init() {
+    x = 0;
+    y = 0;
+  }
+
   public void up() {
     y -= 1;
   }

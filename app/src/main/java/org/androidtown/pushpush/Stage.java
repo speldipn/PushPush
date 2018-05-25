@@ -7,6 +7,9 @@ import android.graphics.Paint;
 import android.util.Log;
 import android.view.View;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 public class Stage extends View {
   int gridCount;
   float unit;
@@ -20,10 +23,11 @@ public class Stage extends View {
   Paint okPaint = new Paint();
   Paint tempPaint = null;
   GameChecker gameChecker;
+  GameMap gameMap;
 
   public Stage(Context context) {
     super(context);
-    this.gameChecker = (MainActivity)context;
+    this.gameChecker = (MainActivity) context;
     // grid
     gridPaint.setColor(Color.GRAY); // 사각형의 색
     gridPaint.setStyle(Paint.Style.STROKE); // 사각형의 스타일
@@ -52,6 +56,8 @@ public class Stage extends View {
 
   public interface GameChecker {
     public void endOfGameCallback();
+
+    public void nextGameCallback();
   }
 
   private void drawMap(Canvas canvas) {
@@ -78,8 +84,12 @@ public class Stage extends View {
         // TODO: 골인 지점을 삼각형.
       }
     }
-    if(exitFlag) {
-      gameChecker.endOfGameCallback();
+    if (exitFlag) {
+      if (gameMap.hasNextMap()) {
+        gameChecker.nextGameCallback();
+      } else {
+        gameChecker.endOfGameCallback();
+      }
     }
   }
 
@@ -161,12 +171,17 @@ public class Stage extends View {
         if (checkPos(next_x, next_y)) {
           if (currentMap[next_x][next_y] == 1 || currentMap[next_x][next_y] == 5) {
             if (checkPos(next_x - 1, next_y)
-            && (currentMap[next_x - 1][next_y] == 1 || currentMap[next_x -1][next_y] == 2)) {
+              && (currentMap[next_x - 1][next_y] == 1 || currentMap[next_x - 1][next_y] == 2 || currentMap[next_x - 1][next_y] == 5)) {
               // 블럭 이중 충돌
               ok = false;
             } else if (checkPos(next_x - 1, next_y) && currentMap[next_x - 1][next_y] == 9) {
-              currentMap[next_x][next_y] = 0;
-              currentMap[next_x - 1][next_y] = 5;
+              if (currentMap[next_x][next_y] == 5) {
+                currentMap[next_x][next_y] = 9;
+                currentMap[next_x - 1][next_y] = 5;
+              } else {
+                currentMap[next_x][next_y] = 0;
+                currentMap[next_x - 1][next_y] = 5;
+              }
             } else {
               // 블럭 이동
               if (checkPos(next_x - 1, next_y)) {
@@ -195,12 +210,18 @@ public class Stage extends View {
         if (checkPos(next_x, next_y)) {
           if (currentMap[next_x][next_y] == 1 || currentMap[next_x][next_y] == 5) {
             if (checkPos(next_x + 1, next_y)
-              && (currentMap[next_x + 1][next_y] == 1 || currentMap[next_x + 1][next_y] == 2)) {
+              && (currentMap[next_x + 1][next_y] == 1 || currentMap[next_x + 1][next_y] == 2 || currentMap[next_x + 1][next_y] == 5))
+            {
               // 이중 장애물
               ok = false;
             } else if (checkPos(next_x + 1, next_y) && currentMap[next_x + 1][next_y] == 9) {
-              currentMap[next_x][next_y] = 0;
-              currentMap[next_x + 1][next_y] = 5;
+              if (currentMap[next_x][next_y] == 5) {
+                currentMap[next_x][next_y] = 9;
+                currentMap[next_x + 1][next_y] = 5;
+              } else {
+                currentMap[next_x][next_y] = 0;
+                currentMap[next_x + 1][next_y] = 5;
+              }
             } else {
               // 장애물 이동
               if (checkPos(next_x + 1, next_y)) {
@@ -228,12 +249,19 @@ public class Stage extends View {
         if (checkPos(next_x, next_y)) {
           if (currentMap[next_x][next_y] == 1 || currentMap[next_x][next_y] == 5) {
             if (checkPos(next_x, next_y - 1)
-              && (currentMap[next_x][next_y - 1] == 1 || currentMap[next_x][next_y - 1] == 2)) {
+              && (currentMap[next_x][next_y - 1] == 1 || currentMap[next_x][next_y - 1] == 2 || currentMap[next_x][next_y - 1] == 5))
+            {
               // 이중 장애물
               ok = false;
             } else if (checkPos(next_x, next_y - 1) && currentMap[next_x][next_y - 1] == 9) {
-              currentMap[next_x][next_y] = 0;
-              currentMap[next_x][next_y - 1] = 5;
+              if (currentMap[next_x][next_y] == 5) {
+                currentMap[next_x][next_y] = 9;
+                currentMap[next_x][next_y - 1] = 5;
+              } else {
+                currentMap[next_x][next_y] = 0;
+                currentMap[next_x][next_y - 1] = 5;
+              }
+
             } else {
               // 장애물 이동
               if (checkPos(next_x, next_y - 1)) {
@@ -261,12 +289,17 @@ public class Stage extends View {
         if (checkPos(next_x, next_y)) {
           if (currentMap[next_x][next_y] == 1 || currentMap[next_x][next_y] == 5) {
             if (checkPos(next_x, next_y + 1)
-              && (currentMap[next_x][next_y + 1] == 1 || currentMap[next_x][next_y + 1] == 2)) {
+              && (currentMap[next_x][next_y + 1] == 1 || currentMap[next_x][next_y + 1] == 2 || currentMap[next_x][next_y + 1] == 5)) {
               // 이중 장애물
               ok = false;
             } else if (checkPos(next_x, next_y + 1) && currentMap[next_x][next_y + 1] == 9) {
-              currentMap[next_x][next_y] = 0;
-              currentMap[next_x][next_y + 1] = 5;
+              if (currentMap[next_x][next_y] == 5) {
+                currentMap[next_x][next_y] = 9;
+                currentMap[next_x][next_y + 1] = 5;
+              } else {
+                currentMap[next_x][next_y] = 0;
+                currentMap[next_x][next_y + 1] = 5;
+              }
             } else {
               // 장애물 이동
               if (checkPos(next_x, next_y + 1)) {
@@ -293,7 +326,23 @@ public class Stage extends View {
     return ok;
   }
 
-  public void setMap(int[][] map1) {
-    currentMap = map1;
+  public void setMap(GameMap map) {
+    gameMap = map;
+    nextMap();
+  }
+
+  public boolean nextMap() {
+    int[][] map = gameMap.nextMap();
+    if (map == null) return false;
+    else {
+      currentMap = new int[map.length][map[0].length];
+      for (int i = 0; i < map.length; ++i) {
+        System.arraycopy(map[i], 0, currentMap[i], 0, map[i].length);
+      }
+      if (player != null) {
+        player.init();
+      }
+    }
+    return true;
   }
 }

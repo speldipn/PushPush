@@ -18,6 +18,7 @@ public class MainActivity extends AppCompatActivity implements Stage.GameChecker
   float unit;
 
   FrameLayout container;
+  FrameLayout nextPopup;
   Stage stage;
   Player player;
   GameMap gameMap;
@@ -26,6 +27,7 @@ public class MainActivity extends AppCompatActivity implements Stage.GameChecker
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
+    nextPopup = findViewById(R.id.popup);
     initGame();
     initStage();
     initPlayer();
@@ -45,9 +47,8 @@ public class MainActivity extends AppCompatActivity implements Stage.GameChecker
     container = findViewById(R.id.container);
     stage = new Stage(this);
     stage.setConfig(GRID_WIDTH, unit);
-    stage.setMap(gameMap.map1);
+    stage.setMap(gameMap);
     container.addView(stage);
-
   }
 
   private void initPlayer() {
@@ -76,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements Stage.GameChecker
 
   @Override
   public void endOfGameCallback() {
-    Toast toast = Toast.makeText(this, "성공 !! 게임을 종료합니다.", Toast.LENGTH_LONG);
+    Toast toast = Toast.makeText(this, "게임이 끝났습니다 ! 종료하겠습니다.", Toast.LENGTH_LONG);
     toast.setGravity(Gravity.CENTER, 0, 0);
     toast.show();
 
@@ -85,6 +86,7 @@ public class MainActivity extends AppCompatActivity implements Stage.GameChecker
       public void run() {
         try {
           Thread.sleep(3000);
+
           MainActivity.this.finish();
         } catch (Exception e) {
           e.printStackTrace();
@@ -92,5 +94,16 @@ public class MainActivity extends AppCompatActivity implements Stage.GameChecker
       }
     };
     exitThread.start();
+  }
+
+  @Override
+  public void nextGameCallback() {
+    nextPopup.setVisibility(View.VISIBLE);
+  }
+
+  public void nextMap(View v) {
+    stage.nextMap();
+    stage.postInvalidate();
+    nextPopup.setVisibility(View.GONE);
   }
 }
